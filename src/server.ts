@@ -8,8 +8,8 @@ import { PORT } from '@config/env/app'
 
 import cors from 'cors'
 
-import { appRoutes } from '@infra/http/routes'
-import { errorHandler } from '@infra/http/middlewares/error-handler'
+import { appRoutes } from '@routes/index'
+import { errorHandler } from '@middlewares/error-handler'
 
 async function bootstrap() {
   const app = express()

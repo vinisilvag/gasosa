@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { ExampleController } from '@infra/http/controllers/example-controller'
+import { ExampleController } from '@controllers/example-controller'
 
 const exampleRoutes = Router()
 const exampleController = new ExampleController()
