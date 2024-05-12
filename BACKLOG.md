@@ -32,9 +32,9 @@ Histórias que já foram detalhadas e devem ser desenvolvidas ao longo da sprint
 
 - Como usuário, eu gostaria de me autenticar na plataforma.
 
-  - Criar rota para autenticar um usuário.
-  - Validar as informações de login enviadas ao servidor.
-  - Criar rota para buscar dados de um usuário autenticado.
+  - Criar rota para autenticar um usuário. [Vinicius] [Done]
+  - Validar as informações de login enviadas ao servidor. [Vinicius] [Done]
+  - Criar rota para buscar dados de um usuário autenticado. [Vinicius]
 
 - Como consumidor, eu gostaria de ver a lista de preços de postos de gasolina perto de mim.
 
