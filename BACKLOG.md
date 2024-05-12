@@ -20,15 +20,15 @@ Histórias que ainda serão refinadas e desenvolvidas nas próximas sprints do p
 
 Histórias que já foram detalhadas e devem ser desenvolvidas ao longo da sprint atual.
 
-- Tarefas técnicas (não atreladas a nenhuma história).
+- Tarefas técnicas (não atreladas a nenhuma história). [Done]
 
-  - Configurar o ambiente de desenvolvimento [Vinicius]
+  - Configurar o ambiente de desenvolvimento [Vinicius] [Done]
 
-- Como usuário, eu gostaria de me cadastrar na plataforma.
+- Como usuário, eu gostaria de me cadastrar na plataforma. [Done]
 
-  - Criar o modelo de usuário no servidor/banco de dados.
-  - Criar rota para inserção de dados de cadastro no banco.
-  - Validar as informações enviadas ao servidor.
+  - Criar o modelo de usuário no servidor/banco de dados. [Vinicius] [Done]
+  - Criar rota para inserção de dados de cadastro no banco. [Vinicius] [Done]
+  - Validar as informações enviadas ao servidor. [Vinicius] [Done]
 
 - Como usuário, eu gostaria de me autenticar na plataforma.
 
