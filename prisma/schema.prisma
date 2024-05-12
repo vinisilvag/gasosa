@@ -7,9 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Example {
-  id      Int    @id @default(autoincrement())
-  message String
+model User {
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
+  password String
+  type     String @default("user")
 
-  @@map("examples")
+  @@map("users")
 }

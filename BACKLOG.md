@@ -35,8 +35,6 @@ Histórias que já foram detalhadas e devem ser desenvolvidas ao longo da sprint
   - Criar rota para autenticar um usuário.
   - Validar as informações de login enviadas ao servidor.
   - Criar rota para buscar dados de um usuário autenticado.
-  - Persistir o usuário autenticado no navegador.
-  - Caso o usuário esteja autenticado, buscar dados os dados dele assim que a página for carregada.
 
 - Como consumidor, eu gostaria de ver a lista de preços de postos de gasolina perto de mim.
 
@@ -44,11 +42,11 @@ Histórias que já foram detalhadas e devem ser desenvolvidas ao longo da sprint
 
 - Como consumidor, eu gostaria de poder filtrar a lista de preços (gasolina, diesel, ordenar por preço, proximidade, etc).
 
-  - 
+  -
 
 - Como posto, eu gostaria de postar meus preços e localização.
-  
-  - 
+
+  -
 
 ---
 
