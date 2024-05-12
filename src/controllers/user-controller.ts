@@ -39,7 +39,7 @@ export class UserController {
 
       return response.status(201).json({ user })
     } else {
-      throw new AppError(400, 'Email already registered.')
+      throw new AppError(409, 'Email already registered.')
     }
   }
 }
