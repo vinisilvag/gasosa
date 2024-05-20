@@ -34,19 +34,26 @@ Histórias que já foram detalhadas e devem ser desenvolvidas ao longo da sprint
 
   - Criar rota para autenticar um usuário. [Vinicius] [Done]
   - Validar as informações de login enviadas ao servidor. [Vinicius] [Done]
-  - Criar rota para buscar dados de um usuário autenticado. [Vinicius]
+  - Criar rota para buscar dados de um usuário autenticado. [Vinicius] [Done]
 
-- Como consumidor, eu gostaria de ver a lista de preços de postos de gasolina perto de mim.
-
-  -
-
-- Como consumidor, eu gostaria de poder filtrar a lista de preços (gasolina, diesel, ordenar por preço, proximidade, etc).
+- Como consumidor, eu gostaria de ver a lista de preços de postos de gasolina perto de mim. [Mirna]
 
   -
 
-- Como posto, eu gostaria de postar meus preços e localização.
+- Como consumidor, eu gostaria de poder filtrar a lista de preços (ordenar por preço, proximidade, etc).
 
   -
+
+- Como consumidor, eu gostaria de poder filtrar os postos pelo nome. [Vinicius] [Done]
+
+  - Criar rota para buscar os postos que contenham o texto passado como filtro no nome. [Vinicius] [Done]
+  - Validar a informação do filtro enviada para o servidor. [Vinicius] [Done]
+
+- Como posto, eu gostaria de atualizar o preço da gasolina. [Vinicius]
+
+  - Criar rota para atualizar o preço da gasolina de um usuário de tipo `gas-station`. [Vinicius]
+  - Validar a informação do preço enviada para o servidor. [Vinicius]
+  - Garantir que o usuário autenticado que consuma essa rota seja do tipo `gas-station` [Vinicius]
 
 ---
 

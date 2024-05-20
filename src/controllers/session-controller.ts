@@ -8,6 +8,7 @@ import { compare } from 'bcrypt'
 
 import { SECRET } from '@config/env/auth'
 import { sign } from 'jsonwebtoken'
+import { UserViewModel } from '@view-models/user-view-model'
 
 export const authenticateUserBody = z.object({
   email: z.string().email(),
@@ -21,10 +22,7 @@ export class SessionController {
     const user = await prisma.user.findUnique({ where: { id: userId } })
 
     if (user) {
-      // Removes user password from the object
-      const { password: _, ...filteredUser } = user
-
-      return response.status(200).json({ user: filteredUser })
+      return response.status(200).json({ user: UserViewModel.toHTTP(user) })
     } else {
       throw new AppError(404, 'User not found.')
     }
@@ -43,10 +41,9 @@ export class SessionController {
           expiresIn: '7d'
         })
 
-        // Removes user password from the object
-        const { password: _, ...filteredUser } = user
-
-        return response.status(200).json({ user: filteredUser, token })
+        return response
+          .status(200)
+          .json({ user: UserViewModel.toHTTP(user), token })
       } else {
         throw new AppError(401, 'Invalid email/password combination.')
       }
