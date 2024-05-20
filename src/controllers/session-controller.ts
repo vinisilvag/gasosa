@@ -17,10 +17,10 @@ export const authenticateUserBody = z.object({
 
 export class SessionController {
   public async index(request: Request, response: Response) {
-    const { id: userId } = request.user
+    const { id: gasStationId } = request.gasStation
 
     const gasStation = await prisma.gasStation.findUnique({
-      where: { id: userId }
+      where: { id: gasStationId }
     })
 
     if (gasStation) {
