@@ -7,15 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model GasStation {
   id        Int    @id @default(autoincrement())
   name      String
   email     String @unique
   password  String
-  type      String @default("user")
-  latitude  Float?
-  longitude Float?
-  gasPrice  Float? @map("gas_price")
+  latitude  Float
+  longitude Float
+  gasPrice  Float  @map("gas_price")
 
-  @@map("users")
+  @@map("gas_stations")
 }

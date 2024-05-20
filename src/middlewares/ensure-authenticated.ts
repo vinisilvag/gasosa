@@ -28,7 +28,7 @@ export async function ensureAuthenticated(
     const decoded = verify(token, SECRET)
     const { id } = decoded as TokenPayload
 
-    request.user = {
+    request.gasStation = {
       id
     }
 
