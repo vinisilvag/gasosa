@@ -7,14 +7,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model GasStation {
-  id        Int    @id @default(autoincrement())
+model User {
+  id        Int      @id @default(autoincrement())
   name      String
-  email     String @unique
+  email     String   @unique
+  password  String
+  likes     Like[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model GasStation {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
   password  String
   latitude  Float
   longitude Float
-  gasPrice  Float  @map("gas_price")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  fuels    Fuel[]
+  liked_by Like[]
 
   @@map("gas_stations")
+}
+
+model Like {
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+
+  gasStation   GasStation @relation(fields: [gasStationId], references: [id], onDelete: Cascade)
+  gasStationId Int
+
+  @@unique([userId, gasStationId])
+  @@map("likes")
+}
+
+model Fuel {
+  id           Int        @id @default(autoincrement())
+  name         String
+  price        Float
+  gasStation   GasStation @relation(fields: [gasStationId], references: [id], onDelete: Cascade)
+  gasStationId Int
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  @@unique([id, name])
+  @@map("fuels")
 }

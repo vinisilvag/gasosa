@@ -8,32 +8,42 @@ import { compare } from 'bcrypt'
 
 import { SECRET } from '@config/env/auth'
 import { sign } from 'jsonwebtoken'
+
+import { UserViewModel } from '@view-models/user-view-model'
 import { GasStationViewModel } from '@view-models/gas-station-view-model'
 
-export const authenticateUserBody = z.object({
+export const authenticateBody = z.object({
   email: z.string().email(),
   password: z.string().min(6)
 })
 
 export class SessionController {
-  public async index(request: Request, response: Response) {
-    const { id: gasStationId } = request.gasStation
+  public async authenticateUser(request: Request, response: Response) {
+    const { email, password } = authenticateBody.parse(request.body)
 
-    const gasStation = await prisma.gasStation.findUnique({
-      where: { id: gasStationId }
-    })
+    const user = await prisma.user.findUnique({ where: { email } })
 
-    if (gasStation) {
-      return response
-        .status(200)
-        .json({ gasStation: GasStationViewModel.toHTTP(gasStation) })
+    if (user) {
+      const passwordMatch = await compare(password, user.password)
+
+      if (passwordMatch) {
+        const token = sign({ id: user.id }, SECRET, {
+          expiresIn: '7d'
+        })
+
+        return response
+          .status(200)
+          .json({ user: UserViewModel.toHTTP(user), token })
+      } else {
+        throw new AppError(401, 'Invalid email/password combination.')
+      }
     } else {
       throw new AppError(404, 'Gas station not found.')
     }
   }
 
-  public async authenticate(request: Request, response: Response) {
-    const { email, password } = authenticateUserBody.parse(request.body)
+  public async authenticateGasStation(request: Request, response: Response) {
+    const { email, password } = authenticateBody.parse(request.body)
 
     const gasStation = await prisma.gasStation.findUnique({ where: { email } })
 

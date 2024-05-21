@@ -12,17 +12,17 @@ const createGasStationBody = z.object({
   email: z.string().email(),
   password: z.string().min(6),
   latitude: z.number(),
-  longitude: z.number(),
-  gasPrice: z.number()
+  longitude: z.number()
 })
 
-const listGasStationsQuery = z.object({
-  filter: z.string().default('')
+const createFuelBody = z.object({
+  name: z.string(),
+  price: z.number()
 })
 
 export class GasStationController {
   public async create(request: Request, response: Response) {
-    const { name, email, password, latitude, longitude, gasPrice } =
+    const { name, email, password, latitude, longitude } =
       createGasStationBody.parse(request.body)
 
     const gasStationExists = await prisma.gasStation.findUnique({
@@ -38,8 +38,7 @@ export class GasStationController {
           email,
           password: hashedPassword,
           latitude,
-          longitude,
-          gasPrice
+          longitude
         }
       })
 
@@ -51,17 +50,18 @@ export class GasStationController {
     }
   }
 
-  public async gasStationsPerName(request: Request, response: Response) {
-    const { filter } = listGasStationsQuery.parse(request.query)
+  public async createFuel(request: Request, response: Response) {
+    const { name, price } = createFuelBody.parse(request.body)
+    const { id: gasStationId } = request.session
 
-    const gasStations = await prisma.gasStation.findMany({
-      where: { name: { contains: filter } }
+    const gasStation = await prisma.gasStation.findUnique({
+      where: { id: gasStationId }
     })
 
-    return response.status(200).json({
-      gasStations: gasStations.map(gasStation =>
-        GasStationViewModel.toHTTP(gasStation)
-      )
-    })
+    if (!gasStation) {
+      throw new AppError(404, 'Authenticated gas station not found.')
+    }
+
+    // criar o combustível aqui
   }
 }

@@ -7,7 +7,10 @@ import { ensureAuthenticated } from '@middlewares/ensure-authenticated'
 const sessionRoutes = Router()
 const sessionController = new SessionController()
 
-sessionRoutes.get('/profile', ensureAuthenticated, sessionController.index)
-sessionRoutes.post('/authenticate', sessionController.authenticate)
+sessionRoutes.post('/users/authenticate', sessionController.authenticateUser)
+sessionRoutes.post(
+  '/gas-stations/authenticate',
+  sessionController.authenticateGasStation
+)
 
 export { sessionRoutes }
