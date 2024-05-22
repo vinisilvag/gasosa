@@ -42,6 +42,22 @@ export class UserController {
     }
   }
 
+  public async delete(request: Request, response: Response) {
+    const { id: userId } = request.session;
+  
+    try {
+      await prisma.user.delete({
+        where: {
+          id: userId,
+        },
+      });
+  
+      return response.status(200).json({ message: 'User deleted successfully.' });
+    } catch (error) {
+      throw new AppError(500, 'Internal Server Error.');
+    }
+  }
+
   public async likesList(request: Request, response: Response) {
     const { id: userId } = request.session
 
