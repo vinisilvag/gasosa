@@ -6,13 +6,15 @@ import { ensureAuthenticated } from '@middlewares/ensure-authenticated'
 const gasStationRoutes = Router()
 const gasStationController = new GasStationController()
 
+gasStationRoutes.get('/', gasStationController.filterPerNames)
+gasStationRoutes.get('/distances', gasStationController.filterPerDistance)
+gasStationRoutes.get('/:gasStationId', gasStationController.show)
 gasStationRoutes.post('/', gasStationController.create)
-gasStationRoutes.get('/list', gasStationController.listStations)
 gasStationRoutes.delete(
-  '/del',
+  '/account',
   ensureAuthenticated,
-  gasStationController.deleteGasStation
-);
+  gasStationController.delete
+)
 
 gasStationRoutes.post(
   '/fuel',
@@ -20,14 +22,14 @@ gasStationRoutes.post(
   gasStationController.createFuel
 )
 gasStationRoutes.put(
-  '/updateFuel',
+  '/fuel/:fuelId',
   ensureAuthenticated,
   gasStationController.updateFuelPrice
 )
 gasStationRoutes.delete(
-  '/delFuel',
+  '/fuel/:fuelId',
   ensureAuthenticated,
   gasStationController.deleteFuel
-);
+)
 
 export { gasStationRoutes }

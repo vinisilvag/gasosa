@@ -9,8 +9,8 @@ import { compare } from 'bcrypt'
 import { SECRET } from '@config/env/auth'
 import { sign } from 'jsonwebtoken'
 
-import { UserViewModel } from '@view-models/user-view-model'
-import { GasStationViewModel } from '@view-models/gas-station-view-model'
+import { selectUser } from '@utils/select-user'
+import { selectGasStation } from '@utils/select-gas-station'
 
 export const authenticateBody = z.object({
   email: z.string().email(),
@@ -30,15 +30,28 @@ export class SessionController {
         const token = sign({ id: user.id }, SECRET, {
           expiresIn: '7d'
         })
-
-        return response
-          .status(200)
-          .json({ user: UserViewModel.toHTTP(user), token })
+        const { password, ...userWithoutPassword } = user
+        return response.status(200).json({ user: userWithoutPassword, token })
       } else {
         throw new AppError(401, 'Invalid email/password combination.')
       }
     } else {
-      throw new AppError(404, 'Gas station not found.')
+      throw new AppError(404, 'User not found.')
+    }
+  }
+
+  public async userProfile(request: Request, response: Response) {
+    const { id: userId } = request.session
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: selectUser()
+    })
+
+    if (user) {
+      return response.status(200).json({ user })
+    } else {
+      throw new AppError(404, 'User not found.')
     }
   }
 
@@ -54,13 +67,28 @@ export class SessionController {
         const token = sign({ id: gasStation.id }, SECRET, {
           expiresIn: '7d'
         })
-
+        const { password, ...gasStationWithoutPassword } = gasStation
         return response
           .status(200)
-          .json({ gasStation: GasStationViewModel.toHTTP(gasStation), token })
+          .json({ gasStation: gasStationWithoutPassword, token })
       } else {
         throw new AppError(401, 'Invalid email/password combination.')
       }
+    } else {
+      throw new AppError(404, 'Gas station not found.')
+    }
+  }
+
+  public async gasStationProfile(request: Request, response: Response) {
+    const { id: gasStationId } = request.session
+
+    const gasStation = await prisma.gasStation.findUnique({
+      where: { id: gasStationId },
+      select: selectGasStation(false)
+    })
+
+    if (gasStation) {
+      return response.status(200).json({ gasStation })
     } else {
       throw new AppError(404, 'Gas station not found.')
     }

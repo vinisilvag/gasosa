@@ -5,7 +5,9 @@ import { prisma } from '@database/prisma'
 import { z } from 'zod'
 
 import { hash } from 'bcrypt'
-import { UserViewModel } from '@view-models/user-view-model'
+
+import { selectUser } from '@utils/select-user'
+import { selectGasStation } from '@utils/select-gas-station'
 
 const createUserBody = z.object({
   name: z.string(),
@@ -33,28 +35,30 @@ export class UserController {
           name,
           email,
           password: hashedPassword
-        }
+        },
+        select: selectUser()
       })
 
-      return response.status(201).json({ user: UserViewModel.toHTTP(user) })
+      return response.status(201).json({ user })
     } else {
       throw new AppError(409, 'Email already registered.')
     }
   }
 
   public async delete(request: Request, response: Response) {
-    const { id: userId } = request.session;
-  
-    try {
+    const { id: userId } = request.session
+
+    const user = await prisma.user.findUnique({ where: { id: userId } })
+
+    if (user) {
       await prisma.user.delete({
         where: {
-          id: userId,
-        },
-      });
-  
-      return response.status(200).json({ message: 'User deleted successfully.' });
-    } catch (error) {
-      throw new AppError(500, 'Internal Server Error.');
+          id: userId
+        }
+      })
+      return response.status(204).send()
+    } else {
+      throw new AppError(404, 'User not found.')
     }
   }
 
@@ -70,20 +74,7 @@ export class UserController {
         where: { userId },
         select: {
           gasStation: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              latitude: true,
-              longitude: true,
-              fuels: {
-                select: {
-                  id: true,
-                  name: true,
-                  price: true
-                }
-              }
-            }
+            select: selectGasStation(false)
           }
         }
       })
@@ -94,7 +85,7 @@ export class UserController {
       })
       return response.status(200).json({ likes: filteredLikes })
     } else {
-      throw new AppError(404, 'Authenticated user not found.')
+      throw new AppError(404, 'User user not found.')
     }
   }
 
@@ -126,7 +117,7 @@ export class UserController {
         throw new AppError(404, 'Gas station not found.')
       }
     } else {
-      throw new AppError(404, 'Authenticated user not found.')
+      throw new AppError(404, 'User not found.')
     }
   }
 
@@ -160,7 +151,7 @@ export class UserController {
         throw new AppError(404, 'Gas station not found.')
       }
     } else {
-      throw new AppError(404, 'Authenticated user not found.')
+      throw new AppError(404, 'User not found.')
     }
   }
 }

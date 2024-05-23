@@ -6,7 +6,23 @@ import { prisma } from '@database/prisma'
 import { z } from 'zod'
 
 import { hash } from 'bcrypt'
-import { GasStationViewModel } from '@view-models/gas-station-view-model'
+
+import { selectGasStation } from '@utils/select-gas-station'
+import { selectFuel } from '@utils/select-fuel'
+
+const filterPerNamesQuery = z.object({
+  gasStationName: z.string().default(''),
+  fuelName: z.string().default('')
+})
+
+const filterPerDistanceQuery = z.object({
+  userLatitude: z.coerce.number(),
+  userLongitude: z.coerce.number()
+})
+
+const showGasStationParams = z.object({
+  gasStationId: z.coerce.number()
+})
 
 const createGasStationBody = z.object({
   name: z.string(),
@@ -21,7 +37,76 @@ const createFuelBody = z.object({
   price: z.number()
 })
 
+const updateFuelBody = z.object({
+  newName: z.string(),
+  newPrice: z.number()
+})
+
+const fuelParams = z.object({
+  fuelId: z.coerce.number()
+})
+
 export class GasStationController {
+  public async filterPerNames(request: Request, response: Response) {
+    const { gasStationName, fuelName } = filterPerNamesQuery.parse(
+      request.query
+    )
+
+    const gasStations = await prisma.gasStation.findMany({
+      select: selectGasStation(true),
+      where: {
+        ...(gasStationName && { name: { contains: gasStationName } }),
+        ...(fuelName && { fuels: { some: { name: { contains: fuelName } } } })
+      }
+    })
+
+    return response.status(200).json({ gasStations })
+  }
+
+  public async filterPerDistance(request: Request, response: Response) {
+    const { userLatitude, userLongitude } = filterPerDistanceQuery.parse(
+      request.query
+    )
+
+    const gasStations = await prisma.gasStation.findMany({
+      select: selectGasStation(true)
+    })
+
+    const userCoords = {
+      latitude: userLatitude,
+      longitude: userLongitude
+    }
+
+    gasStations.sort((a, b) => {
+      const distanceA = getDistance(userCoords, {
+        latitude: a.latitude,
+        longitude: a.longitude
+      })
+      const distanceB = getDistance(userCoords, {
+        latitude: b.latitude,
+        longitude: b.longitude
+      })
+      return distanceA - distanceB
+    })
+
+    return response.status(200).json({ gasStations })
+  }
+
+  public async show(request: Request, response: Response) {
+    const { gasStationId } = showGasStationParams.parse(request.params)
+
+    const gasStation = await prisma.gasStation.findUnique({
+      where: { id: gasStationId },
+      select: selectGasStation(true)
+    })
+
+    if (gasStation) {
+      response.status(200).json({ gasStation })
+    } else {
+      throw new AppError(404, 'Gas station not found.')
+    }
+  }
+
   public async create(request: Request, response: Response) {
     const { name, email, password, latitude, longitude } =
       createGasStationBody.parse(request.body)
@@ -40,84 +125,34 @@ export class GasStationController {
           password: hashedPassword,
           latitude,
           longitude
-        }
+        },
+        select: selectGasStation(false)
       })
 
-      return response
-        .status(201)
-        .json({ gasStation: GasStationViewModel.toHTTP(gasStation) })
+      return response.status(201).json({ gasStation })
     } else {
       throw new AppError(409, 'Email already registered.')
     }
   }
 
-  public async listStations(request: Request, response: Response) {
-    const { fuelType, userLatitude, userLongitude } = request.query;
-  
-    if (userLatitude && userLongitude) {
-      try {
-        const gasStations = await prisma.gasStation.findMany({
-          include: {
-            fuels: true
-          }
-        });
-  
-        const userCoords = { latitude: Number(userLatitude), longitude: Number(userLongitude) };
-        gasStations.sort((a, b) => {
-          const distanceA = getDistance(userCoords, { latitude: a.latitude, longitude: a.longitude });
-          const distanceB = getDistance(userCoords, { latitude: b.latitude, longitude: b.longitude });
-  
-          return distanceA - distanceB;
-        });
-  
-        return response.status(200).json({ gasStations: gasStations });
-      } catch (error) {
-        throw new AppError(500, 'Internal Server Error.');
-      }
-    } else if (fuelType) {
-      try {
-        const gasStations = await prisma.gasStation.findMany({
-          include: {
-            fuels: true
-          }
-        });
-  
-        const filteredGasStations = gasStations.filter(gs => 
-          gs.fuels.some(fuel => fuel.name.toLowerCase() === fuelType)
-        );
-  
-        filteredGasStations.sort((a, b) => {
-          const fuelA = a.fuels.find(fuel => fuel.name.toLowerCase() === fuelType);
-          const fuelB = b.fuels.find(fuel => fuel.name.toLowerCase() === fuelType);
-  
-          return fuelA.price - fuelB.price;
-        });
-  
-        return response.status(200).json({ gasStations: filteredGasStations });
-      } catch (error) {
-        throw new AppError(500, 'Internal Server Error.');
-      }
-    } else {
-      throw new AppError(400, 'Either fuel type or user coordinates are required.');
-    }
-  }
+  public async delete(request: Request, response: Response) {
+    const { id: gasStationId } = request.session
 
-  public async deleteGasStation(request: Request, response: Response) {
-    const { id: gasStationId } = request.session;
-  
-    try {
+    const gasStation = await prisma.gasStation.findUnique({
+      where: { id: gasStationId }
+    })
+
+    if (gasStation) {
       await prisma.gasStation.delete({
         where: {
-          id: gasStationId,
-        },
-      });
-  
-      return response.status(200).json({ message: 'Gas station and associated fuels deleted successfully.' });
-    } catch (error) {
-      throw new AppError(500, 'Internal Server Error.');
+          id: gasStationId
+        }
+      })
+      return response.status(204).send()
+    } else {
+      throw new AppError(404, 'Gas station not found.')
     }
   }
-  
 
   public async createFuel(request: Request, response: Response) {
     const { name, price } = createFuelBody.parse(request.body)
@@ -128,7 +163,7 @@ export class GasStationController {
     })
 
     if (!gasStation) {
-      throw new AppError(404, 'Authenticated gas station not found.')
+      throw new AppError(404, 'Gas station not found.')
     }
 
     const fuel = await prisma.fuel.create({
@@ -136,68 +171,66 @@ export class GasStationController {
         name,
         price,
         gasStationId
-      }
+      },
+      select: selectFuel()
     })
 
-    return response.status(201).json({ fuel })    
+    return response.status(201).json({ fuel })
   }
 
   public async updateFuelPrice(request: Request, response: Response) {
-    const { fuelName, newPrice } = request.body;
+    const { newName, newPrice } = updateFuelBody.parse(request.body)
+    const { fuelId } = fuelParams.parse(request.params)
     const { id: gasStationId } = request.session
 
-    try {
-      const fuelToUpdate = await prisma.fuel.findFirst({
-        where: {
-          gasStationId,
-          name: fuelName,
-        },
-      });
-
-      if (!fuelToUpdate) {
-        throw new AppError(404, 'Fuel not found for this gas station.');
+    const fuel = await prisma.fuel.findUnique({
+      where: {
+        id: fuelId
       }
+    })
 
-      const updatedFuel = await prisma.fuel.update({
-        where: {
-          id: fuelToUpdate.id,
-        },
-        data: {
-          price: newPrice,
-        },
-      });
+    if (!fuel) throw new AppError(404, 'Fuel not found.')
 
-      return response.status(200).json({ message: 'Fuel price updated successfully.' });
-    } catch (error) {
-      throw new AppError(500, 'Internal Server Error.');
+    if (fuel.gasStationId !== gasStationId) {
+      throw new AppError(401, 'You are not the owner of this fuel.')
     }
+
+    const updatedFuel = await prisma.fuel.update({
+      where: {
+        id: fuelId
+      },
+      data: {
+        name: newName,
+        price: newPrice
+      },
+      select: selectFuel()
+    })
+
+    return response.status(200).json({ fuel: updatedFuel })
   }
 
   public async deleteFuel(request: Request, response: Response) {
-    const { fuelName } = request.body;
+    const { fuelId } = fuelParams.parse(request.params)
     const { id: gasStationId } = request.session
 
-    try {
-      const fuelToDelete = await prisma.fuel.findFirst({
-        where: {
-          gasStationId,
-          name: fuelName,
-        },
-      });
-
-      if (!fuelToDelete) {
-        throw new AppError(404, 'Fuel not found for this gas station.');
+    const fuel = await prisma.fuel.findUnique({
+      where: {
+        id: fuelId
       }
+    })
 
-      await prisma.fuel.delete({
-        where: {
-          id: fuelToDelete.id,
-        },
-      });
+    if (!fuel) throw new AppError(404, 'Fuel not found.')
 
-      return response.status(200).json({ message: 'Fuel deleted successfully.' });
-    } catch (error) {
-      throw new AppError(500, 'Internal Server Error.');
+    if (fuel.gasStationId !== gasStationId) {
+      throw new AppError(401, 'You are not the owner of this fuel.')
     }
+
+    await prisma.fuel.delete({
+      where: {
+        id: fuelId
+      }
+    })
+
+    return response.status(204).send()
   }
 }
