@@ -1,5 +1,7 @@
 # Gasosa
 
+Trabalho prático 1 da disciplina de Engenharia de Software 2.
+
 ## O que é o sistema
 
 Esse repositório armazena a API de um sistema de cadastro e listagem de postos de gasolina. A ideia é que, em conjunto com um interface gráfica, os postos possam se cadastrar, informando sua localização, combustíveis que ofertam e o preço de cada um deles. Os usuários comuns, por sua vez, são capazes de visualizar os postos cadastrados e filtrá-los pelo nome dos postos, tipo de combustível e distância com relação à localização atual do usuário. Além disso, os usuários comuns também podem favoritar e listar seus postos favoritos em uma lista personalizada.
