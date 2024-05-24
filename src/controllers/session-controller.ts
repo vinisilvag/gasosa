@@ -12,6 +12,8 @@ import { sign } from 'jsonwebtoken'
 import { selectUser } from '@utils/select-user'
 import { selectGasStation } from '@utils/select-gas-station'
 
+import { UserNotFound } from '@errors/user-not-found'
+
 export const authenticateBody = z.object({
   email: z.string().email(),
   password: z.string().min(6)
@@ -36,7 +38,7 @@ export class SessionController {
         throw new AppError(401, 'Invalid email/password combination.')
       }
     } else {
-      throw new AppError(404, 'User not found.')
+      throw new UserNotFound()
     }
   }
 
@@ -51,7 +53,7 @@ export class SessionController {
     if (user) {
       return response.status(200).json({ user })
     } else {
-      throw new AppError(404, 'User not found.')
+      throw new UserNotFound()
     }
   }
 

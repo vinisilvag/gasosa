@@ -9,6 +9,8 @@ import { hash } from 'bcrypt'
 import { selectUser } from '@utils/select-user'
 import { selectGasStation } from '@utils/select-gas-station'
 
+import { UserNotFound } from '@errors/user-not-found'
+
 const createUserBody = z.object({
   name: z.string(),
   email: z.string().email(),
@@ -58,7 +60,7 @@ export class UserController {
       })
       return response.status(204).send()
     } else {
-      throw new AppError(404, 'User not found.')
+      throw new UserNotFound()
     }
   }
 
@@ -117,7 +119,7 @@ export class UserController {
         throw new AppError(404, 'Gas station not found.')
       }
     } else {
-      throw new AppError(404, 'User not found.')
+      throw new UserNotFound()
     }
   }
 
@@ -134,7 +136,7 @@ export class UserController {
     })
 
     if (!user) {
-      throw new AppError(404, 'User not found.')
+      throw new UserNotFound()
     }
 
     if (!gasStation) {
