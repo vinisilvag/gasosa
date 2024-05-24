@@ -4,12 +4,11 @@ import { AppError } from '@helpers/app-error'
 import { prisma } from '@database/prisma'
 import { z } from 'zod'
 
-import { hash } from 'bcrypt'
-
-import { selectUser } from '@utils/select-user'
 import { selectGasStation } from '@utils/select-gas-station'
 
 import { UserNotFound } from '@errors/user-not-found'
+
+import { CreateUser } from '@services/users/create-user'
 
 const createUserBody = z.object({
   name: z.string(),
@@ -25,26 +24,10 @@ export class UserController {
   public async create(request: Request, response: Response) {
     const { name, email, password } = createUserBody.parse(request.body)
 
-    const userExists = await prisma.user.findUnique({
-      where: { email }
-    })
+    const createUser = new CreateUser()
+    const { user } = await createUser.execute({ name, email, password })
 
-    if (!userExists) {
-      const hashedPassword = await hash(password, 10)
-
-      const user = await prisma.user.create({
-        data: {
-          name,
-          email,
-          password: hashedPassword
-        },
-        select: selectUser()
-      })
-
-      return response.status(201).json({ user })
-    } else {
-      throw new AppError(409, 'Email already registered.')
-    }
+    return response.status(201).json({ user })
   }
 
   public async delete(request: Request, response: Response) {
