@@ -133,25 +133,26 @@ export class UserController {
       where: { id: gasStationId }
     })
 
-    if (user) {
-      if (gasStation) {
-        const like = await prisma.like.findUnique({
-          where: { userId_gasStationId: { userId, gasStationId } }
-        })
-
-        if (like) {
-          await prisma.like.delete({
-            where: { userId_gasStationId: { userId, gasStationId } }
-          })
-          return response.status(204).send()
-        } else {
-          throw new AppError(409, 'Gas station not liked yet.')
-        }
-      } else {
-        throw new AppError(404, 'Gas station not found.')
-      }
-    } else {
+    if (!user) {
       throw new AppError(404, 'User not found.')
     }
+
+    if (!gasStation) {
+      throw new AppError(404, 'Gas station not found.')
+    }
+
+    const like = await prisma.like.findUnique({
+      where: { userId_gasStationId: { userId, gasStationId } }
+    })
+
+    if (!like) {
+      throw new AppError(409, 'Gas station not liked yet.')
+    }
+
+    await prisma.like.delete({
+      where: { userId_gasStationId: { userId, gasStationId } }
+    })
+
+    return response.status(204).send()
   }
 }
