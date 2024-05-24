@@ -83,6 +83,8 @@ Requisição de tipo **POST** no _endpoint_: `http://localhost:3333/api/v1/users
 
 Requisição de tipo **DELETE** no _endpoint_: `http://localhost:3333/api/v1/users/likes/:gasStationId`. O _token_ de autenticação JWT deve ser informado para que a operação seja autorizada.
 
+---
+
 ### Postos de Gasolina
 
 #### Listar postos
@@ -160,6 +162,8 @@ O corpo da requisição deve ser algo como
 #### Deletar combustível
 
 Requisição de tipo **DELETE** no _endpoint_: `http://localhost:3333/api/v1/gas-stations/fuel/:fuelId`. O _token_ de autenticação JWT deve ser informado para que a operação seja autorizada.
+
+---
 
 ### Sessão
 
