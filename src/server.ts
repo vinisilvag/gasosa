@@ -1,15 +1,15 @@
 import 'express-async-errors'
 import 'reflect-metadata'
 
-import '@config/env'
+import '@/config/env'
 
 import express from 'express'
-import { PORT } from '@config/env/app'
+import { PORT } from '@/config/env/app'
 
 import cors from 'cors'
 
-import { appRoutes } from '@routes/index'
-import { errorHandler } from '@middlewares/error-handler'
+import { appRoutes } from '@/infra/http/routes/index'
+import { errorHandler } from '@/infra/http/middlewares/error-handler'
 
 async function bootstrap() {
   const app = express()
