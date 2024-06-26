@@ -1,4 +1,6 @@
-import { prisma } from '@/infra/database/prisma/client'
+import { inject as Inject, injectable as Injectable } from 'tsyringe'
+import { type GasStationsRepository } from '@/application/repositories/gas-stations-repository'
+
 import { type GasStation } from '@prisma/client'
 
 import { SECRET } from '@/config/env/auth'
@@ -18,12 +20,18 @@ interface AuthenticateGasStationResponse {
   token: string
 }
 
+@Injectable()
 export class AuthenticateGasStation {
+  constructor(
+    @Inject('GasStationsRepository')
+    private readonly gasStationsRepository: GasStationsRepository
+  ) {}
+
   async execute({
     email,
     password
   }: AuthenticateGasStationRequest): Promise<AuthenticateGasStationResponse> {
-    const gasStation = await prisma.gasStation.findUnique({ where: { email } })
+    const gasStation = await this.gasStationsRepository.findByEmail(email)
 
     if (!gasStation) {
       throw new GasStationNotFound()

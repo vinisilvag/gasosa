@@ -1,4 +1,6 @@
-import { prisma } from '@/infra/database/prisma/client'
+import { inject as Inject, injectable as Injectable } from 'tsyringe'
+import { type UsersRepository } from '@/application/repositories/users-repository'
+
 import { type User } from '@prisma/client'
 
 import { SECRET } from '@/config/env/auth'
@@ -18,12 +20,18 @@ interface AuthenticateUserResponse {
   token: string
 }
 
+@Injectable()
 export class AuthenticateUser {
+  constructor(
+    @Inject('UsersRepository')
+    private readonly usersRepository: UsersRepository
+  ) {}
+
   async execute({
     email,
     password
   }: AuthenticateUserRequest): Promise<AuthenticateUserResponse> {
-    const user = await prisma.user.findUnique({ where: { email } })
+    const user = await this.usersRepository.findByEmail(email)
 
     if (!user) {
       throw new UserNotFound()

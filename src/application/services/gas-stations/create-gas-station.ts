@@ -1,8 +1,7 @@
-import { prisma } from '@/infra/database/prisma/client'
+import { inject as Inject, injectable as Injectable } from 'tsyringe'
+import { type GasStationsRepository } from '@/application/repositories/gas-stations-repository'
 
 import { hash } from 'bcrypt'
-
-import { selectGasStation } from '@/utils/select-gas-station'
 
 import { GasStationAlreadyExists } from '@/application/errors/gas-stations/gas-station-already-exists'
 
@@ -18,7 +17,13 @@ interface CreateGasStationResponse {
   gasStation: any
 }
 
+@Injectable()
 export class CreateGasStation {
+  constructor(
+    @Inject('GasStationsRepository')
+    private readonly gasStationsRepository: GasStationsRepository
+  ) {}
+
   async execute({
     name,
     email,
@@ -26,9 +31,7 @@ export class CreateGasStation {
     latitude,
     longitude
   }: CreateGasStationRequest): Promise<CreateGasStationResponse> {
-    const gasStationExists = await prisma.gasStation.findUnique({
-      where: { email }
-    })
+    const gasStationExists = await this.gasStationsRepository.findByEmail(email)
 
     if (gasStationExists) {
       throw new GasStationAlreadyExists()
@@ -36,17 +39,16 @@ export class CreateGasStation {
 
     const hashedPassword = await hash(password, 10)
 
-    const gasStation = await prisma.gasStation.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        latitude,
-        longitude
-      },
-      select: selectGasStation(false)
+    const gasStation = await this.gasStationsRepository.create({
+      name,
+      email,
+      password: hashedPassword,
+      latitude,
+      longitude
     })
 
-    return { gasStation }
+    const { password: removed, ...gasStationWithoutPassword } = gasStation
+
+    return { gasStation: gasStationWithoutPassword }
   }
 }

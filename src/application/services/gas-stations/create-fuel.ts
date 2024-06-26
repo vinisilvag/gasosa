@@ -1,7 +1,8 @@
-import { prisma } from '@/infra/database/prisma/client'
-import { type Fuel } from '@prisma/client'
+import { inject as Inject, injectable as Injectable } from 'tsyringe'
+import { type GasStationsRepository } from '@/application/repositories/gas-stations-repository'
+import { type FuelsRepository } from '@/application/repositories/fuels-repository'
 
-import { selectFuel } from '@/utils/select-fuel'
+import { type Fuel } from '@prisma/client'
 
 import { GasStationNotFound } from '@/application/errors/gas-stations/gas-station-not-found'
 
@@ -15,27 +16,30 @@ interface CreateFuelResponse {
   fuel: Omit<Fuel, 'gasStationId'>
 }
 
+@Injectable()
 export class CreateFuel {
+  constructor(
+    @Inject('GasStationsRepository')
+    private readonly gasStationsRepository: GasStationsRepository,
+    @Inject('FuelsRepository')
+    private readonly fuelsRepository: FuelsRepository
+  ) {}
+
   async execute({
     name,
     price,
     gasStationId
   }: CreateFuelRequest): Promise<CreateFuelResponse> {
-    const gasStation = await prisma.gasStation.findUnique({
-      where: { id: gasStationId }
-    })
+    const gasStation = await this.gasStationsRepository.findById(gasStationId)
 
     if (!gasStation) {
       throw new GasStationNotFound()
     }
 
-    const fuel = await prisma.fuel.create({
-      data: {
-        name,
-        price,
-        gasStationId
-      },
-      select: selectFuel()
+    const fuel = await this.fuelsRepository.create({
+      name,
+      price,
+      gasStationId
     })
 
     return { fuel }

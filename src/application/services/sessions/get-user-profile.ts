@@ -1,7 +1,7 @@
-import { prisma } from '@/infra/database/prisma/client'
-import { type User } from '@prisma/client'
+import { inject as Inject, injectable as Injectable } from 'tsyringe'
+import { type UsersRepository } from '@/application/repositories/users-repository'
 
-import { selectUser } from '@/utils/select-user'
+import { type User } from '@prisma/client'
 
 import { UserNotFound } from '@/application/errors/users/user-not-found'
 
@@ -13,19 +13,24 @@ interface GetUserProfileResponse {
   user: Omit<User, 'password'>
 }
 
+@Injectable()
 export class GetUserProfile {
+  constructor(
+    @Inject('UsersRepository')
+    private readonly usersRepository: UsersRepository
+  ) {}
+
   async execute({
     userId
   }: GetUserProfileRequest): Promise<GetUserProfileResponse> {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: selectUser()
-    })
+    const user = await this.usersRepository.findById(userId)
 
     if (!user) {
       throw new UserNotFound()
     }
 
-    return { user }
+    const { password: removed, ...userWithoutPassword } = user
+
+    return { user: userWithoutPassword }
   }
 }

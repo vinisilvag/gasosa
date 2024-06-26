@@ -1,7 +1,7 @@
-import { prisma } from '@/infra/database/prisma/client'
-import { type GasStation } from '@prisma/client'
+import { inject as Inject, injectable as Injectable } from 'tsyringe'
+import { type GasStationsRepository } from '@/application/repositories/gas-stations-repository'
 
-import { selectGasStation } from '@/utils/select-gas-station'
+import { type GasStation } from '@prisma/client'
 
 import { GasStationNotFound } from '@/application/errors/gas-stations/gas-station-not-found'
 
@@ -13,19 +13,24 @@ interface GetGasStationProfileResponse {
   gasStation: Omit<GasStation, 'password'>
 }
 
+@Injectable()
 export class GetGasStationProfile {
+  constructor(
+    @Inject('GasStationsRepository')
+    private readonly gasStationsRepository: GasStationsRepository
+  ) {}
+
   async execute({
     gasStationId
   }: GetGasStationProfileRequest): Promise<GetGasStationProfileResponse> {
-    const gasStation = await prisma.gasStation.findUnique({
-      where: { id: gasStationId },
-      select: selectGasStation(false)
-    })
+    const gasStation = await this.gasStationsRepository.findById(gasStationId)
 
     if (!gasStation) {
       throw new GasStationNotFound()
     }
 
-    return { gasStation }
+    const { password: removed, ...gasStationWithoutPassword } = gasStation
+
+    return { gasStation: gasStationWithoutPassword }
   }
 }

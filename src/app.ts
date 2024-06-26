@@ -2,6 +2,7 @@ import 'express-async-errors'
 import 'reflect-metadata'
 
 import '@/config/env'
+import '@/shared/container'
 
 import express from 'express'
 

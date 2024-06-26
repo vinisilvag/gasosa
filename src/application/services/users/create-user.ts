@@ -1,9 +1,9 @@
-import { prisma } from '@/infra/database/prisma/client'
+import { inject as Inject, injectable as Injectable } from 'tsyringe'
+import { type UsersRepository } from '@/application/repositories/users-repository'
+
 import { type User } from '@prisma/client'
 
 import { hash } from 'bcrypt'
-
-import { selectUser } from '@/utils/select-user'
 
 import { UserAlreadyExists } from '@/application/errors/users/user-already-exists'
 
@@ -17,15 +17,19 @@ interface CreateUserResponse {
   user: Omit<User, 'password'>
 }
 
+@Injectable()
 export class CreateUser {
+  constructor(
+    @Inject('UsersRepository')
+    private readonly usersRepository: UsersRepository
+  ) {}
+
   async execute({
     name,
     email,
     password
   }: CreateUserRequest): Promise<CreateUserResponse> {
-    const userExists = await prisma.user.findUnique({
-      where: { email }
-    })
+    const userExists = await this.usersRepository.findByEmail(email)
 
     if (userExists) {
       throw new UserAlreadyExists()
@@ -33,15 +37,14 @@ export class CreateUser {
 
     const hashedPassword = await hash(password, 10)
 
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword
-      },
-      select: selectUser()
+    const user = await this.usersRepository.create({
+      name,
+      email,
+      password: hashedPassword
     })
 
-    return { user }
+    const { password: removed, ...userWithoutPassword } = user
+
+    return { user: userWithoutPassword }
   }
 }

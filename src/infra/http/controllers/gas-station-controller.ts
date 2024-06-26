@@ -1,4 +1,5 @@
 import { type Request, type Response } from 'express'
+import { container } from 'tsyringe'
 
 import { filterPerNamesQuery } from '@/infra/http/dtos/gas-stations/filter-per-names-query'
 import { filterPerDistanceQuery } from '@/infra/http/dtos/gas-stations/filter-per-distance.query'
@@ -23,7 +24,7 @@ export class GasStationController {
       request.query
     )
 
-    const getGasStationsPerName = new GetGasStationsPerName()
+    const getGasStationsPerName = container.resolve(GetGasStationsPerName)
     const { gasStations } = await getGasStationsPerName.execute({
       gasStationName,
       fuelName
@@ -37,7 +38,9 @@ export class GasStationController {
       request.query
     )
 
-    const getGasStationsPerDistance = new GetGasStationsPerDistance()
+    const getGasStationsPerDistance = container.resolve(
+      GetGasStationsPerDistance
+    )
     const { gasStations } = await getGasStationsPerDistance.execute({
       userLatitude,
       userLongitude
@@ -49,7 +52,7 @@ export class GasStationController {
   public async show(request: Request, response: Response) {
     const { gasStationId } = showGasStationParams.parse(request.params)
 
-    const showGasStation = new ShowGasStation()
+    const showGasStation = container.resolve(ShowGasStation)
     const { gasStation } = await showGasStation.execute({ gasStationId })
 
     response.status(200).json({ gasStation })
@@ -59,7 +62,7 @@ export class GasStationController {
     const { name, email, password, latitude, longitude } =
       createGasStationBody.parse(request.body)
 
-    const createGasStation = new CreateGasStation()
+    const createGasStation = container.resolve(CreateGasStation)
     const { gasStation } = await createGasStation.execute({
       name,
       email,
@@ -74,7 +77,7 @@ export class GasStationController {
   public async delete(request: Request, response: Response) {
     const { id: gasStationId } = request.session
 
-    const deleteGasStation = new DeleteGasStation()
+    const deleteGasStation = container.resolve(DeleteGasStation)
     await deleteGasStation.execute({ gasStationId })
 
     return response.status(204).send()
@@ -84,7 +87,7 @@ export class GasStationController {
     const { name, price } = createFuelBody.parse(request.body)
     const { id: gasStationId } = request.session
 
-    const createFuel = new CreateFuel()
+    const createFuel = container.resolve(CreateFuel)
     const { fuel } = await createFuel.execute({ name, price, gasStationId })
 
     return response.status(201).json({ fuel })
@@ -95,7 +98,7 @@ export class GasStationController {
     const { fuelId } = fuelParams.parse(request.params)
     const { id: gasStationId } = request.session
 
-    const updateFuel = new UpdateFuel()
+    const updateFuel = container.resolve(UpdateFuel)
     const { fuel } = await updateFuel.execute({
       newName,
       newPrice,
@@ -110,7 +113,7 @@ export class GasStationController {
     const { fuelId } = fuelParams.parse(request.params)
     const { id: gasStationId } = request.session
 
-    const deleteFuel = new DeleteFuel()
+    const deleteFuel = container.resolve(DeleteFuel)
     await deleteFuel.execute({ fuelId, gasStationId })
 
     return response.status(204).send()

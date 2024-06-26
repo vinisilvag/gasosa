@@ -1,6 +1,6 @@
-import { prisma } from '@/infra/database/prisma/client'
-
-import { selectGasStation } from '@/utils/select-gas-station'
+import { inject as Inject, injectable as Injectable } from 'tsyringe'
+import { type UsersRepository } from '@/application/repositories/users-repository'
+import { type LikesRepository } from '@/application/repositories/likes-repository'
 
 import { UserNotFound } from '@/application/errors/users/user-not-found'
 
@@ -12,24 +12,23 @@ interface GetLikesResponse {
   likes: any
 }
 
+@Injectable()
 export class GetLikes {
+  constructor(
+    @Inject('UsersRepository')
+    private readonly usersRepository: UsersRepository,
+    @Inject('LikesRepository')
+    private readonly likesRepository: LikesRepository
+  ) {}
+
   async execute({ userId }: GetLikesRequest): Promise<GetLikesResponse> {
-    const user = await prisma.user.findUnique({
-      where: { id: userId }
-    })
+    const user = await this.usersRepository.findById(userId)
 
     if (!user) {
       throw new UserNotFound()
     }
 
-    const likes = await prisma.like.findMany({
-      where: { userId },
-      select: {
-        gasStation: {
-          select: selectGasStation(false)
-        }
-      }
-    })
+    const likes = await this.likesRepository.findManyByUserId(userId)
 
     const filteredLikes = likes.map(like => {
       return {

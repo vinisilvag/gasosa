@@ -1,6 +1,5 @@
-import { prisma } from '@/infra/database/prisma/client'
-
-import { selectGasStation } from '@/utils/select-gas-station'
+import { inject as Inject, injectable as Injectable } from 'tsyringe'
+import { type GasStationsRepository } from '@/application/repositories/gas-stations-repository'
 
 import { GasStationNotFound } from '@/application/errors/gas-stations/gas-station-not-found'
 
@@ -12,14 +11,17 @@ interface ShowGasStationResponse {
   gasStation: any
 }
 
+@Injectable()
 export class ShowGasStation {
+  constructor(
+    @Inject('GasStationsRepository')
+    private readonly gasStationsRepository: GasStationsRepository
+  ) {}
+
   async execute({
     gasStationId
   }: ShowGasStationRequest): Promise<ShowGasStationResponse> {
-    const gasStation = await prisma.gasStation.findUnique({
-      where: { id: gasStationId },
-      select: selectGasStation(true)
-    })
+    const gasStation = await this.gasStationsRepository.findById(gasStationId)
 
     if (!gasStation) {
       throw new GasStationNotFound()

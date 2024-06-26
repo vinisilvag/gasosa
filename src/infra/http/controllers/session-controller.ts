@@ -1,4 +1,5 @@
 import { type Request, type Response } from 'express'
+import { container } from 'tsyringe'
 
 import { authenticateBody } from '@/infra/http/dtos/sessions/authenticate-body'
 
@@ -11,7 +12,7 @@ export class SessionController {
   public async authenticateUser(request: Request, response: Response) {
     const { email, password } = authenticateBody.parse(request.body)
 
-    const authenticateUser = new AuthenticateUser()
+    const authenticateUser = container.resolve(AuthenticateUser)
     const { token, user } = await authenticateUser.execute({ email, password })
 
     return response.status(200).json({ user, token })
@@ -20,7 +21,7 @@ export class SessionController {
   public async userProfile(request: Request, response: Response) {
     const { id: userId } = request.session
 
-    const getUserProfile = new GetUserProfile()
+    const getUserProfile = container.resolve(GetUserProfile)
     const { user } = await getUserProfile.execute({ userId })
 
     return response.status(200).json({ user })
@@ -29,7 +30,7 @@ export class SessionController {
   public async authenticateGasStation(request: Request, response: Response) {
     const { email, password } = authenticateBody.parse(request.body)
 
-    const authenticateGasStation = new AuthenticateGasStation()
+    const authenticateGasStation = container.resolve(AuthenticateGasStation)
     const { token, gasStation } = await authenticateGasStation.execute({
       email,
       password
@@ -41,7 +42,7 @@ export class SessionController {
   public async gasStationProfile(request: Request, response: Response) {
     const { id: gasStationId } = request.session
 
-    const getGasStationProfile = new GetGasStationProfile()
+    const getGasStationProfile = container.resolve(GetGasStationProfile)
     const { gasStation } = await getGasStationProfile.execute({ gasStationId })
 
     return response.status(200).json({ gasStation })

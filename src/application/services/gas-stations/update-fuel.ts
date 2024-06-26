@@ -1,7 +1,7 @@
-import { prisma } from '@/infra/database/prisma/client'
-import { type Fuel } from '@prisma/client'
+import { inject as Inject, injectable as Injectable } from 'tsyringe'
+import { type FuelsRepository } from '@/application/repositories/fuels-repository'
 
-import { selectFuel } from '@/utils/select-fuel'
+import { type Fuel } from '@prisma/client'
 
 import { FuelNotFound } from '@/application/errors/gas-stations/fuel-not-found'
 import { NotOwnerOfTheFuel } from '@/application/errors/gas-stations/not-owner-of-the-fuel'
@@ -17,18 +17,20 @@ interface UpdateFuelResponse {
   fuel: Omit<Fuel, 'gasStationId'>
 }
 
+@Injectable()
 export class UpdateFuel {
+  constructor(
+    @Inject('FuelsRepository')
+    private readonly fuelsRepository: FuelsRepository
+  ) {}
+
   async execute({
     newName,
     newPrice,
     gasStationId,
     fuelId
   }: UpdateFuelRequest): Promise<UpdateFuelResponse> {
-    const fuel = await prisma.fuel.findUnique({
-      where: {
-        id: fuelId
-      }
-    })
+    const fuel = await this.fuelsRepository.findById(fuelId)
 
     if (!fuel) throw new FuelNotFound()
 
@@ -36,15 +38,10 @@ export class UpdateFuel {
       throw new NotOwnerOfTheFuel()
     }
 
-    const updatedFuel = await prisma.fuel.update({
-      where: {
-        id: fuelId
-      },
-      data: {
-        name: newName,
-        price: newPrice
-      },
-      select: selectFuel()
+    const updatedFuel = await this.fuelsRepository.update({
+      name: newName,
+      price: newPrice,
+      fuelId
     })
 
     return { fuel: updatedFuel }

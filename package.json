@@ -52,6 +52,7 @@
     "geolib": "^3.3.4",
     "jsonwebtoken": "^9.0.2",
     "reflect-metadata": "^0.2.2",
+    "tsyringe": "^4.8.0",
     "zod": "^3.23.7"
   }
 }
