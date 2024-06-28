@@ -9,7 +9,7 @@ import { InvalidJwt } from '@/application/errors/sessions/invalid-jwt'
 interface TokenPayload {
   iat: number
   exp: number
-  id: number
+  id: string
 }
 
 export async function ensureAuthenticated(

@@ -1,5 +1,3 @@
-import { describe, beforeEach, it, expect } from 'vitest'
-
 import { UpdateFuel } from './update-fuel'
 import { InMemoryFuelsRepository } from '@/tests/repositories/in-memory-fuels-repository'
 

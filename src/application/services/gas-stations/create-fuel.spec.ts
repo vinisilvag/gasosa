@@ -1,5 +1,3 @@
-import { describe, beforeEach, it, expect } from 'vitest'
-
 import { CreateFuel } from './create-fuel'
 import { InMemoryFuelsRepository } from '@/tests/repositories/in-memory-fuels-repository'
 import { InMemoryGasStationsRepository } from '@/tests/repositories/in-memory-gas-stations-repository'

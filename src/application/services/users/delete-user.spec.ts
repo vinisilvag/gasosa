@@ -1,5 +1,3 @@
-import { describe, beforeEach, it, expect } from 'vitest'
-
 import { DeleteUser } from './delete-user'
 
 import { InMemoryUsersRepository } from '@/tests/repositories/in-memory-users-repository'
