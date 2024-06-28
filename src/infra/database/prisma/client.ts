@@ -1,3 +1,5 @@
+import { ENV } from '@/config/env/app'
+
 import { type GasStation, PrismaClient } from '@prisma/client'
 
 export interface LikeWithGasStation {
@@ -5,5 +7,5 @@ export interface LikeWithGasStation {
 }
 
 export const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error']
+  log: ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error']
 })

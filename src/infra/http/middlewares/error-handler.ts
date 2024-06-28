@@ -1,3 +1,4 @@
+import { ENV } from '@/config/env/app'
 import { AppError } from '@/helpers/app-error'
 import {
   type ErrorRequestHandler,
@@ -14,7 +15,9 @@ export async function errorHandler(
   response: Response,
   _: NextFunction
 ): Promise<Response> {
-  console.log(err)
+  if (ENV === 'development') {
+    console.log(err)
+  }
 
   if (err instanceof ZodError) {
     const errors = err.issues

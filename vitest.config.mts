@@ -5,7 +5,8 @@ import path from 'path'
 export default defineConfig({
   test: {
     setupFiles: [path.resolve(__dirname, 'tests', 'vitest.setup.ts')],
-    globals: true
+    globals: true,
+    reporters: ['verbose']
   },
   plugins: [tsconfigPaths()]
 })
