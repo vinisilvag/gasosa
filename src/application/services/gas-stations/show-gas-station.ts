@@ -3,12 +3,14 @@ import { type GasStationsRepository } from '@/application/repositories/gas-stati
 
 import { GasStationNotFound } from '@/application/errors/gas-stations/gas-station-not-found'
 
+import { type GasStation } from '@prisma/client'
+
 interface ShowGasStationRequest {
-  gasStationId: number
+  gasStationId: string
 }
 
 interface ShowGasStationResponse {
-  gasStation: any
+  gasStation: GasStation
 }
 
 @Injectable()

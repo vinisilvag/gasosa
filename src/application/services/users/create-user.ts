@@ -14,7 +14,7 @@ interface CreateUserRequest {
 }
 
 interface CreateUserResponse {
-  user: Omit<User, 'password'>
+  user: User
 }
 
 @Injectable()
@@ -43,8 +43,6 @@ export class CreateUser {
       password: hashedPassword
     })
 
-    const { password: removed, ...userWithoutPassword } = user
-
-    return { user: userWithoutPassword }
+    return { user }
   }
 }

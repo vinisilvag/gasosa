@@ -4,7 +4,7 @@ import { type UsersRepository } from '@/application/repositories/users-repositor
 import { UserNotFound } from '@/application/errors/users/user-not-found'
 
 interface DeleteUserRequest {
-  userId: number
+  userId: string
 }
 
 @Injectable()

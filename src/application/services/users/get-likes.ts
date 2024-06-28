@@ -4,12 +4,14 @@ import { type LikesRepository } from '@/application/repositories/likes-repositor
 
 import { UserNotFound } from '@/application/errors/users/user-not-found'
 
+import { type GasStation } from '@prisma/client'
+
 interface GetLikesRequest {
-  userId: number
+  userId: string
 }
 
 interface GetLikesResponse {
-  likes: any
+  likes: Array<{ gasStation: Omit<GasStation, 'password'> }>
 }
 
 @Injectable()
@@ -30,12 +32,6 @@ export class GetLikes {
 
     const likes = await this.likesRepository.findManyByUserId(userId)
 
-    const filteredLikes = likes.map(like => {
-      return {
-        ...like.gasStation
-      }
-    })
-
-    return { likes: filteredLikes }
+    return { likes }
   }
 }

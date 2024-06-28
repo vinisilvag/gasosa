@@ -5,8 +5,8 @@ import { FuelNotFound } from '@/application/errors/gas-stations/fuel-not-found'
 import { NotOwnerOfTheFuel } from '@/application/errors/gas-stations/not-owner-of-the-fuel'
 
 interface DeleteFuelRequest {
-  fuelId: number
-  gasStationId: number
+  fuelId: string
+  gasStationId: string
 }
 
 @Injectable()

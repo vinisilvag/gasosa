@@ -9,12 +9,8 @@ import { NotOwnerOfTheFuel } from '@/application/errors/gas-stations/not-owner-o
 interface UpdateFuelRequest {
   newName: string
   newPrice: number
-  gasStationId: number
-  fuelId: number
-}
-
-interface UpdateFuelResponse {
-  fuel: Omit<Fuel, 'gasStationId'>
+  gasStationId: string
+  fuelId: string
 }
 
 @Injectable()
@@ -29,7 +25,7 @@ export class UpdateFuel {
     newPrice,
     gasStationId,
     fuelId
-  }: UpdateFuelRequest): Promise<UpdateFuelResponse> {
+  }: UpdateFuelRequest): Promise<void> {
     const fuel = await this.fuelsRepository.findById(fuelId)
 
     if (!fuel) throw new FuelNotFound()
@@ -38,12 +34,10 @@ export class UpdateFuel {
       throw new NotOwnerOfTheFuel()
     }
 
-    const updatedFuel = await this.fuelsRepository.update({
+    await this.fuelsRepository.update({
       name: newName,
       price: newPrice,
       fuelId
     })
-
-    return { fuel: updatedFuel }
   }
 }

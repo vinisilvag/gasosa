@@ -6,11 +6,11 @@ import { type GasStation } from '@prisma/client'
 import { GasStationNotFound } from '@/application/errors/gas-stations/gas-station-not-found'
 
 interface GetGasStationProfileRequest {
-  gasStationId: number
+  gasStationId: string
 }
 
 interface GetGasStationProfileResponse {
-  gasStation: Omit<GasStation, 'password'>
+  gasStation: GasStation
 }
 
 @Injectable()
@@ -29,8 +29,6 @@ export class GetGasStationProfile {
       throw new GasStationNotFound()
     }
 
-    const { password: removed, ...gasStationWithoutPassword } = gasStation
-
-    return { gasStation: gasStationWithoutPassword }
+    return { gasStation }
   }
 }

@@ -16,7 +16,7 @@ interface AuthenticateGasStationRequest {
 }
 
 interface AuthenticateGasStationResponse {
-  gasStation: Omit<GasStation, 'password'>
+  gasStation: GasStation
   token: string
 }
 
@@ -47,8 +47,6 @@ export class AuthenticateGasStation {
       expiresIn: '7d'
     })
 
-    const { password: removed, ...gasStationWithoutPassword } = gasStation
-
-    return { token, gasStation: gasStationWithoutPassword }
+    return { token, gasStation }
   }
 }

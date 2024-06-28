@@ -4,7 +4,7 @@ import { type GasStationsRepository } from '@/application/repositories/gas-stati
 import { GasStationNotFound } from '@/application/errors/gas-stations/gas-station-not-found'
 
 interface DeleteGasStationRequest {
-  gasStationId: number
+  gasStationId: string
 }
 
 @Injectable()

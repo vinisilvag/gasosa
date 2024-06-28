@@ -1,20 +1,21 @@
 import { type Like } from '@prisma/client'
+import { type LikeWithGasStation } from '@/infra/database/prisma/client'
 
 export interface CreateLike {
-  userId: number
-  gasStationId: number
+  userId: string
+  gasStationId: string
 }
 
 export interface DeleteLike {
-  userId: number
-  gasStationId: number
+  userId: string
+  gasStationId: string
 }
 
 export interface LikesRepository {
-  findManyByUserId: (userId: number) => Promise<Like[]>
+  findManyByUserId: (userId: string) => Promise<LikeWithGasStation[]>
   findUniqueByUserAndGasStationId: (
-    userId: number,
-    gasStationId: number
+    userId: string,
+    gasStationId: string
   ) => Promise<Like | null>
   create: (data: CreateLike) => Promise<void>
   delete: (data: DeleteLike) => Promise<void>

@@ -9,11 +9,11 @@ import { GasStationNotFound } from '@/application/errors/gas-stations/gas-statio
 interface CreateFuelRequest {
   name: string
   price: number
-  gasStationId: number
+  gasStationId: string
 }
 
 interface CreateFuelResponse {
-  fuel: Omit<Fuel, 'gasStationId'>
+  fuel: Fuel
 }
 
 @Injectable()

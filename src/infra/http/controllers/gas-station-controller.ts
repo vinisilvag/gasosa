@@ -18,6 +18,9 @@ import { CreateFuel } from '@/application/services/gas-stations/create-fuel'
 import { UpdateFuel } from '@/application/services/gas-stations/update-fuel'
 import { DeleteFuel } from '@/application/services/gas-stations/delete-fuel'
 
+import { GasStationViewModel } from '@/infra/http/view-models/gas-station-view-model'
+import { FuelViewModel } from '@/infra/http/view-models/fuel-view-model'
+
 export class GasStationController {
   public async filterPerNames(request: Request, response: Response) {
     const { gasStationName, fuelName } = filterPerNamesQuery.parse(
@@ -30,7 +33,11 @@ export class GasStationController {
       fuelName
     })
 
-    return response.status(200).json({ gasStations })
+    return response.status(200).json({
+      gasStations: gasStations.map(gasStation =>
+        GasStationViewModel.toHTTP(gasStation)
+      )
+    })
   }
 
   public async filterPerDistance(request: Request, response: Response) {
@@ -46,7 +53,11 @@ export class GasStationController {
       userLongitude
     })
 
-    return response.status(200).json({ gasStations })
+    return response.status(200).json({
+      gasStations: gasStations.map(gasStation =>
+        GasStationViewModel.toHTTP(gasStation)
+      )
+    })
   }
 
   public async show(request: Request, response: Response) {
@@ -55,7 +66,9 @@ export class GasStationController {
     const showGasStation = container.resolve(ShowGasStation)
     const { gasStation } = await showGasStation.execute({ gasStationId })
 
-    response.status(200).json({ gasStation })
+    response
+      .status(200)
+      .json({ gasStation: GasStationViewModel.toHTTP(gasStation) })
   }
 
   public async create(request: Request, response: Response) {
@@ -71,7 +84,9 @@ export class GasStationController {
       longitude
     })
 
-    return response.status(201).json({ gasStation })
+    return response
+      .status(201)
+      .json({ gasStation: GasStationViewModel.toHTTP(gasStation) })
   }
 
   public async delete(request: Request, response: Response) {
@@ -90,7 +105,7 @@ export class GasStationController {
     const createFuel = container.resolve(CreateFuel)
     const { fuel } = await createFuel.execute({ name, price, gasStationId })
 
-    return response.status(201).json({ fuel })
+    return response.status(201).json({ fuel: FuelViewModel.toHTTP(fuel) })
   }
 
   public async updateFuelPrice(request: Request, response: Response) {
@@ -99,14 +114,14 @@ export class GasStationController {
     const { id: gasStationId } = request.session
 
     const updateFuel = container.resolve(UpdateFuel)
-    const { fuel } = await updateFuel.execute({
+    await updateFuel.execute({
       newName,
       newPrice,
       fuelId,
       gasStationId
     })
 
-    return response.status(200).json({ fuel })
+    return response.status(204).send()
   }
 
   public async deleteFuel(request: Request, response: Response) {

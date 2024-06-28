@@ -3,18 +3,18 @@ import { type Fuel } from '@prisma/client'
 export interface CreateFuel {
   name: string
   price: number
-  gasStationId: number
+  gasStationId: string
 }
 
 export interface UpdateFuel {
   name: string
   price: number
-  fuelId: number
+  fuelId: string
 }
 
 export interface FuelsRepository {
-  findById: (id: number) => Promise<Fuel | null>
+  findById: (id: string) => Promise<Fuel | null>
   create: (data: CreateFuel) => Promise<Fuel>
-  update: (data: UpdateFuel) => Promise<Fuel>
-  delete: (id: number) => Promise<void>
+  update: (data: UpdateFuel) => Promise<void>
+  delete: (id: string) => Promise<void>
 }

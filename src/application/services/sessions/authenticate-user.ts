@@ -16,7 +16,7 @@ interface AuthenticateUserRequest {
 }
 
 interface AuthenticateUserResponse {
-  user: Omit<User, 'password'>
+  user: User
   token: string
 }
 
@@ -47,8 +47,6 @@ export class AuthenticateUser {
       expiresIn: '7d'
     })
 
-    const { password: removed, ...userWithoutPassword } = user
-
-    return { token, user: userWithoutPassword }
+    return { token, user }
   }
 }

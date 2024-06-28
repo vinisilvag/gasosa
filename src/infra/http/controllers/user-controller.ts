@@ -10,6 +10,9 @@ import { GetLikes } from '@/application/services/users/get-likes'
 import { LikeGasStation } from '@/application/services/users/like-gas-station'
 import { UnlikeGasStation } from '@/application/services/users/unlike-gas-station'
 
+import { UserViewModel } from '@/infra/http/view-models/user-view-model'
+import { LikeViewModel } from '@/infra/http/view-models/like-view-model'
+
 export class UserController {
   public async create(request: Request, response: Response) {
     const { name, email, password } = createUserBody.parse(request.body)
@@ -17,7 +20,7 @@ export class UserController {
     const createUser = container.resolve(CreateUser)
     const { user } = await createUser.execute({ name, email, password })
 
-    return response.status(201).json({ user })
+    return response.status(201).json({ user: UserViewModel.toHTTP(user) })
   }
 
   public async delete(request: Request, response: Response) {
@@ -35,7 +38,9 @@ export class UserController {
     const getLikes = container.resolve(GetLikes)
     const { likes } = await getLikes.execute({ userId })
 
-    return response.status(200).json({ likes })
+    return response
+      .status(200)
+      .json({ likes: likes.map(like => LikeViewModel.toHTTP(like)) })
   }
 
   public async likeGasStation(request: Request, response: Response) {

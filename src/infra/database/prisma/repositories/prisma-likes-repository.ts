@@ -7,19 +7,18 @@ import {
 import { prisma } from '@/infra/database/prisma/client'
 
 export class PrismaLikesRepository implements LikesRepository {
-  async findManyByUserId(userId: number) {
+  async findManyByUserId(userId: string) {
     const likes = await prisma.like.findMany({
-      where: { userId }
+      where: { userId },
+      select: { gasStation: true }
     })
-
     return likes
   }
 
-  async findUniqueByUserAndGasStationId(userId: number, gasStationId: number) {
+  async findUniqueByUserAndGasStationId(userId: string, gasStationId: string) {
     const like = await prisma.like.findUnique({
       where: { userId_gasStationId: { userId, gasStationId } }
     })
-
     return like
   }
 

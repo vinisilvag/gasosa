@@ -8,8 +8,8 @@ import { GasStationNotFound } from '@/application/errors/gas-stations/gas-statio
 import { GasStationNotLikedYet } from '@/application/errors/users/gas-station-not-liked-yet'
 
 interface UnlikeGasStationRequest {
-  userId: number
-  gasStationId: number
+  userId: string
+  gasStationId: string
 }
 
 @Injectable()

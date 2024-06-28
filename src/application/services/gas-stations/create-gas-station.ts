@@ -4,6 +4,7 @@ import { type GasStationsRepository } from '@/application/repositories/gas-stati
 import { hash } from 'bcrypt'
 
 import { GasStationAlreadyExists } from '@/application/errors/gas-stations/gas-station-already-exists'
+import { type GasStation } from '@prisma/client'
 
 interface CreateGasStationRequest {
   name: string
@@ -14,7 +15,7 @@ interface CreateGasStationRequest {
 }
 
 interface CreateGasStationResponse {
-  gasStation: any
+  gasStation: GasStation
 }
 
 @Injectable()
@@ -47,8 +48,6 @@ export class CreateGasStation {
       longitude
     })
 
-    const { password: removed, ...gasStationWithoutPassword } = gasStation
-
-    return { gasStation: gasStationWithoutPassword }
+    return { gasStation }
   }
 }

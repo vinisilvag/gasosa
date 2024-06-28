@@ -6,11 +6,11 @@ import { type User } from '@prisma/client'
 import { UserNotFound } from '@/application/errors/users/user-not-found'
 
 interface GetUserProfileRequest {
-  userId: number
+  userId: string
 }
 
 interface GetUserProfileResponse {
-  user: Omit<User, 'password'>
+  user: User
 }
 
 @Injectable()
@@ -29,8 +29,6 @@ export class GetUserProfile {
       throw new UserNotFound()
     }
 
-    const { password: removed, ...userWithoutPassword } = user
-
-    return { user: userWithoutPassword }
+    return { user }
   }
 }

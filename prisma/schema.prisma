@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   name      String
   email     String   @unique
   password  String
@@ -20,7 +20,7 @@ model User {
 }
 
 model GasStation {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   name      String
   email     String   @unique
   password  String
@@ -36,22 +36,22 @@ model GasStation {
 }
 
 model Like {
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
 
   gasStation   GasStation @relation(fields: [gasStationId], references: [id], onDelete: Cascade)
-  gasStationId Int
+  gasStationId String
 
   @@unique([userId, gasStationId])
   @@map("likes")
 }
 
 model Fuel {
-  id           Int        @id @default(autoincrement())
+  id           String     @id @default(uuid())
   name         String
   price        Float
   gasStation   GasStation @relation(fields: [gasStationId], references: [id], onDelete: Cascade)
-  gasStationId Int
+  gasStationId String
   createdAt    DateTime   @default(now()) @map("created_at")
   updatedAt    DateTime   @updatedAt @map("updated_at")
 

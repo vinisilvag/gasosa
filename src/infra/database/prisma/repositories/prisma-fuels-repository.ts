@@ -7,13 +7,12 @@ import {
 import { prisma } from '@/infra/database/prisma/client'
 
 export class PrismaFuelsRepository implements FuelsRepository {
-  async findById(id: number) {
+  async findById(id: string) {
     return await prisma.fuel.findUnique({ where: { id } })
   }
 
   async create(data: CreateFuel) {
     const { name, price, gasStationId } = data
-
     const fuel = await prisma.fuel.create({
       data: {
         name,
@@ -21,14 +20,12 @@ export class PrismaFuelsRepository implements FuelsRepository {
         gasStationId
       }
     })
-
     return fuel
   }
 
   async update(data: UpdateFuel) {
     const { name, price, fuelId } = data
-
-    const updatedFuel = await prisma.fuel.update({
+    await prisma.fuel.update({
       where: {
         id: fuelId
       },
@@ -37,11 +34,9 @@ export class PrismaFuelsRepository implements FuelsRepository {
         price
       }
     })
-
-    return updatedFuel
   }
 
-  async delete(id: number) {
+  async delete(id: string) {
     await prisma.fuel.delete({
       where: {
         id

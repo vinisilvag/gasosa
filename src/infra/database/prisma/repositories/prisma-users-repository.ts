@@ -6,7 +6,7 @@ import {
 import { prisma } from '@/infra/database/prisma/client'
 
 export class PrismaUsersRepository implements UsersRepository {
-  async findById(id: number) {
+  async findById(id: string) {
     return await prisma.user.findUnique({ where: { id } })
   }
 
@@ -28,7 +28,7 @@ export class PrismaUsersRepository implements UsersRepository {
     return user
   }
 
-  async delete(id: number) {
+  async delete(id: string) {
     await prisma.user.delete({
       where: {
         id
