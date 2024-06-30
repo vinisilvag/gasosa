@@ -3,3 +3,4 @@ dist
 .env
 dev.db-journal
 dev.db
+coverage

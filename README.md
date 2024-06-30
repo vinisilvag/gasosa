@@ -24,9 +24,10 @@ Para a escrita da API, foram utilizadas as seguintes tecnologias:
 - Node.js, como ambiente de execução do servidor;
 - TypeScript, como linguagem de programação principal;
 - Express, como framework web para o Node.js, que possibilitou a criação das rotas que recebem dados e enviam respostas aos usuários aos requisitantes;
-- SQLite, como banco de dados para persistir as informações cadastradas;
+- PostgresSQL, como banco de dados para persistir as informações cadastradas;
 - Prisma, como ORM para simplificar a realização de operações no banco de dados e geração e aplicação das migrações;
-- ESLint e Prettier, como linter e formatador do código, respectivamente.
+- ESLint e Prettier, como linter e formatador do código, respectivamente;
+- Vitest e Supertest, para a escrita dos testes de unidade e testes de integração.
 
 ## Como executar
 
@@ -46,6 +47,30 @@ npm run start:dev
 ```
 
 deve ser usado para executar a API.
+
+## Como executar os testes
+
+Para executar o conjunto de testes de unidade e de integração que foram escritos, uma vez que o ambiente de execução tenha sido configurado, basta executar os comandos
+
+```
+npm run test
+```
+
+para executar os testes de unidade e
+
+```
+npm run test:e2e
+```
+
+para executar os testes de integração.
+
+Cada um dos comandos pode ser executado com o sufixo `:watch` para que, quando um arquivo seja modificado, os testes sejam executados novamente de forma automática. Além disso, o comando
+
+```
+npm run test:coverage
+```
+
+pode ser executado para verificar a cobertura dos testes de unidade em relação ao sistema todo.
 
 ## Rotas definidas
 
