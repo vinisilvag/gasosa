@@ -31,7 +31,7 @@ Para a escrita da API, foram utilizadas as seguintes tecnologias:
 
 ## Como executar
 
-Para executar o sistema, é preciso ter instalado na máquina o Node.js em sua versão 20 e o gerenciador de pacotes de sua preferência (para o desenvolvimento utilizamos o npm).
+Para executar o sistema, é preciso ter instalado na máquina o Node.js em sua versão 20 e o gerenciador de pacotes de sua preferência (para o desenvolvimento utilizamos o npm). Além disso, é necessário que exista uma instância do banco de dados PostgresSQL executando na porta 5432 (porta padrão). Ele pode ser instalado normalmente pela documentação oficial ou através de containers com o Docker.
 
 Para baixar os pacotes necessários para a aplicação e criar o banco de dados, os comandos
 
