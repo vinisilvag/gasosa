@@ -72,7 +72,7 @@ para executar os testes de unidade e
 npm run test:e2e
 ```
 
-para executar os testes de integração.
+para executar os testes de integração. Os testes de integração, para serem executados, criam um novo schema no banco de dados e executam as requisições lá. Após ter sido executado, o schema é deletado e, portanto, o banco de produção não é prejudicado pela execução dos testes de integração.
 
 Cada um dos comandos pode ser executado com o sufixo `:watch` para que, quando um arquivo seja modificado, os testes sejam executados novamente de forma automática. Além disso, o comando
 
