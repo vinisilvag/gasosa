@@ -33,6 +33,16 @@ Para a escrita da API, foram utilizadas as seguintes tecnologias:
 
 Para executar o sistema, é preciso ter instalado na máquina o Node.js em sua versão 20 e o gerenciador de pacotes de sua preferência (para o desenvolvimento utilizamos o npm). Além disso, é necessário que exista uma instância do banco de dados PostgresSQL executando na porta 5432 (porta padrão). Ele pode ser instalado normalmente pela documentação oficial ou através de containers com o Docker.
 
+Por fim, antes de executar o sistema, é necessário definir as variáveis de ambiente. Para tanto, basta criar um arquivo `.env` na raiz do projeto e copiar o conteúdo de `.env.example` para ele
+
+```
+PORT = 3333
+NODE_ENV = "development"
+DATABASE_URL="postgresql://postgres:docker@localhost:5432/gasosa?schema=public"
+```
+
+As variáveis `PORT` e `NODE_ENV` podem ser deixadas como estão e a variável `DATABASE_URL` deve ser alterada de acordo com o usuário do PostgresSQL instalado na máquina. Sendo assim, a sequência `postgres:docker` deve ser alterada por `nome_de_usuario:senha_do_usuario` do banco instalado na máquina.
+
 Para baixar os pacotes necessários para a aplicação e criar o banco de dados, os comandos
 
 ```
