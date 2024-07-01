@@ -1,6 +1,6 @@
 # Gasosa
 
-Trabalho prático 1 da disciplina de Engenharia de Software 2.
+Trabalho prático da disciplina de Engenharia de Software 2.
 
 ## Membros do grupo
 
