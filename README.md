@@ -33,7 +33,7 @@ Para a escrita da API, foram utilizadas as seguintes tecnologias:
 
 Para executar o sistema, é preciso ter instalado na máquina o Node.js em sua versão 20 e o gerenciador de pacotes de sua preferência (para o desenvolvimento utilizamos o npm). Além disso, é necessário que exista uma instância do banco de dados PostgresSQL executando na porta 5432 (porta padrão). Ele pode ser instalado normalmente pela documentação oficial ou através de containers com o Docker.
 
-Por fim, antes de executar o sistema, é necessário definir as variáveis de ambiente. Para tanto, basta criar um arquivo `.env` na raiz do projeto e copiar o conteúdo de `.env.example` para ele
+Por fim, antes de executar o sistema, é necessário definir as variáveis de ambiente. Para tanto, basta criar um arquivo `.env` na raiz do projeto e copiar o conteúdo de `.env.example` para ele.
 
 ```
 PORT = 3333
